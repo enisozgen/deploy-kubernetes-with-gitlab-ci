@@ -1,0 +1,12 @@
+---
+
+# tasks file for deploy-gitlab
+
+
+- include: install-gitlab.yml
+
+- include: repository.yml
+
+- include: namespace-permissions.yml
+
+- include: install-gitlab-runner.yml

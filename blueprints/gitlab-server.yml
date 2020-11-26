@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - name: gitlab
+        image: gitlab/gitlab-ee:latest
+        env:
+          # Give default password for gitlab
+          - name: GITLAB_OMNIBUS_CONFIG
+            value: |
+                gitlab_rails['initial_root_password'] = "password"
+                prometheus_monitoring['enable'] = false
+        ports:
+          - name: gtlb-http-port
+            containerPort: 80
+        volumeMounts:
+          - name: gitlab-vol
+            mountPath: /var/gitlab_vol
+      volumes:
+        - name: gitlab-vol
+          emptyDir: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitlab
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      nodePort: 30080
+      targetPort: 80
+  selector:
+    app: gitlab

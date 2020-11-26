@@ -1,0 +1,8 @@
+---
+
+- name: Create credentials which Gitlab will use
+  command: "k3s kubectl apply -f blueprints/gitlab-ci-permissions.yml"
+
+# You can register your credential to some key
+- name: This allows Gitlab to run kubectl command in defined namespace
+  shell: "k3s kubectl get secret -n gitlab-managed $(k3s kubectl get secret -n gitlab-managed | grep gitlab-managed-sa | awk '{print $1}') --template={{ '{{.data.token}}' }} | base64 --decode > /srv/gitlab-runner/config/SECRET_SA_TOKEN"

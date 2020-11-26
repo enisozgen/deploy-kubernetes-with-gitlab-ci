@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runner
+  template:
+    metadata:
+      labels:
+        app: runner
+    spec:
+      containers:
+      - name: runner
+        image: enisozgen/myrunner:v2
+        env:
+          - name: CI_SERVER_URL
+            value: "http://gitlab:8080"
+          - name: CI_SERVER_HOST
+            value: "gitlab"
+        volumeMounts:
+          - name: docker
+            mountPath: "/var/run/docker.sock"
+          - name: glr-runner-config
+            mountPath: "/etc/gitlab-runner"
+      volumes:
+        - name: docker
+          hostPath:
+            path: "/var/run/docker.sock"
+        - name: glr-runner-config
+          hostPath:
+            path: "/srv/gitlab-runner/config"

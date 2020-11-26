@@ -1,0 +1,12 @@
+---
+
+# tasks file for install-k3s
+
+- name: Check is k3s installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s
+
+- name: Install k3s if not exist
+  shell: "curl -sfL https://get.k3s.io | sh -s - --docker"
+  when: not k3s.stat.exists

@@ -1,0 +1,26 @@
+- name: Deploy gitlab
+  command: "k3s kubectl apply -f blueprints/gitlab-server.yml"
+  register: result
+
+- name: Deploy gitlab results
+  debug:
+    msg: "{{ result }}"
+    verbosity: 1
+
+- name: Wait Gitlab to be ready
+  uri:
+    url: http://localhost:8080/api/v4/runners
+    method: GET
+    return_content: yes
+    status_code: 401
+    body_format: json
+  ignore_errors: yes
+  register: result
+  until: result.content.find("{\"message\":\"401 Unauthorized\"}") != -1
+  retries: 100
+  delay: 5
+  changed_when: false
+
+- name: Wait Gitlab to be ready
+  debug:
+    msg: "{{ result.content }}"

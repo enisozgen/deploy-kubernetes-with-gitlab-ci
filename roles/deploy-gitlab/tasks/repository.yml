@@ -1,0 +1,6 @@
+---
+
+- name: Push the code for Local Gitlab
+  command: git push --set-upstream http://root:password@localhost:8080/root/flask-with-test.git master
+  args:
+    chdir: "{{ repopath }}"

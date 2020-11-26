@@ -1,0 +1,31 @@
+---
+
+- name: Deploy Gitlab runner
+  command: "k3s kubectl apply -f blueprints/gitlab-runner.yml"
+  register: result
+
+- name: debug variable
+  debug:
+    msg: "{{ result }}"
+    verbosity: 1
+
+
+# There is not better automated way to do it!
+# https://docs.gitlab.com/runner/install/kubernetes.html
+
+- name: Paste gitlab_token
+  pause:
+    prompt: "Paste the secret token from http://localhost:8080/root/flask-with-test/-/settings/ci_cd"
+    echo: yes
+  register: gitlab_token
+
+- name: Get pod name of gitlab runner
+  shell: "k3s kubectl get pods | grep runner | awk '{print $1}'"
+  register: runner_pod
+
+- name: Command to register to gitlab runner
+  set_fact:
+    register_command: "gitlab-runner register -n --url http://gitlab.default.svc.cluster.local:8080 --executor shell --description myDocker --registration-token {{ gitlab_token.user_input }}"
+
+- name: Register Gitlab Runner for project
+  command: "k3s kubectl exec -t  {{ runner_pod.stdout }} -- {{ register_command }}"
