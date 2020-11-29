@@ -1,11 +1,10 @@
-- name: Deploy gitlab
-  command: "k3s kubectl apply -f blueprints/gitlab-server.yml"
-  register: result
+---
 
-- name: Deploy gitlab results
-  debug:
-    msg: "{{ result }}"
-    verbosity: 1
+
+- name: Deploy gitlab server
+  include: "sync_file_and_apply.yml"
+  vars:
+    filename: "gitlab-server.yml"
 
 - name: Wait Gitlab to be ready
   uri:

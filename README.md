@@ -15,25 +15,20 @@ Requirements:
 
 
 ```
-git clone https://github.com/enisozgen/flask-with-test.git
+
 mkdir -p /srv/gitlab-runner/config/; echo "YOUR_DOCKERHUB_PASSWORD" > /srv/gitlab-runner/config/SECRET_DOCKERHUB_PASSWORD
+
+# Option 1 (Clone my example repository which is at git clone https://github.com/enisozgen/flask-with-test.git)
+ansible-playbook playbook.yml # and follow the instructions of command output.
+
+# Option 2 (Show your own public repository)
 ansible-playbook -e repopath=/path/of/cloned/folder playbook.yml # and follow the instructions of command output.
 ```
 
 - Installation provides you Gitlab server and Gitlab Runner in your local machine and allows you to experience CI development and CI deployment to the Kubernetes environment.
 
-Normally ansible automations should work with one-run but Gitlab does not provide TOKEN via API call after login to `http://localhost:8080/root/flask-with-test/-/settings/ci_cd` with **user:root password:password** paste the runner token to command line.
+Normally ansible automations should work with one-run but Gitlab does not provide TOKEN via API call after login to `http://YOUR_URL:8080/root/flask-with-test/-/settings/ci_cd` with **user:root password:password** paste the runner token to command line.
 
-
-# Usage
-
-After registration you can see necessary ci pipeline at http://localhost:8080/root/flask-with-test/-/pipelines
-
-After some change in repository you can deploy new version of your application.
-
-```
-git push --set-upstream http://root:password@localhost:8080/root/flask-with-test.git master
-```
 
 # File Structure
 
@@ -50,6 +45,16 @@ git push --set-upstream http://root:password@localhost:8080/root/flask-with-test
 │   └── install-k3s
 └── runner                         # Some basic changes for gitlab Runner
     └── Dockerfile
+```
+
+# Usage
+
+After registration you can see necessary CI pipeline at http://YOUR_URL:8080/root/flask-with-test/-/pipelines
+
+After some change in repository you can deploy new version of your application.
+
+```
+git push --set-upstream http://root:password@YOUR_URL:8080/root/flask-with-test.git master
 ```
 
 # Uninstall

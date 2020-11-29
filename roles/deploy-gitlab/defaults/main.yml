@@ -1,2 +1,4 @@
 ---
 # defaults file for deploy-gitlab
+repopath: "/tmp/flask-with-test"
+main_repo: 'https://github.com/enisozgen/flask-with-test.git'
