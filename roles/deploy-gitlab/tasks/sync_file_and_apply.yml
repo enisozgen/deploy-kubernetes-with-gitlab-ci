@@ -1,0 +1,11 @@
+---
+
+- name: Copy file
+  synchronize:
+    src: "blueprints/{{ filename }}"
+    dest: /tmp/
+  register: result_copy
+
+- name: Run installation and verification script
+  command: k3s kubectl apply -f /tmp/{{ filename }}
+  register: result_run

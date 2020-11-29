@@ -2,6 +2,21 @@
 
 # tasks file for install-k3s
 
+- name: Check is docker installed
+  stat:
+    path: /usr/bin/docker
+  register: docker
+
+- name: Install dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+    install_recommends: no
+  with_items:
+    - docker.io
+  when: not docker.stat.exists
+
 - name: Check is k3s installed
   stat:
     path: /usr/local/bin/k3s
