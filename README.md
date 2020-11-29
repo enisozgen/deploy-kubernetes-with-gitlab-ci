@@ -27,7 +27,7 @@ ansible-playbook -e repopath=/path/of/cloned/folder playbook.yml # and follow th
 
 - Installation provides you Gitlab server and Gitlab Runner in your local machine and allows you to experience CI development and CI deployment to the Kubernetes environment.
 
-Normally ansible automations should work with one-run but Gitlab does not provide TOKEN via API call after login to `http://YOUR_URL:8080/root/flask-with-test/-/settings/ci_cd` with **user:root password:password** paste the runner token to command line.
+Normally, ansible automations should work with one-run but Gitlab does not provide TOKEN via API. It's necessary to login to `http://YOUR_URL:8080/root/flask-with-test/-/settings/ci_cd` with **user:root password:password** paste the runner token to command line.
 
 
 # File Structure

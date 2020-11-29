@@ -8,19 +8,30 @@
 # There is not better automated way to do it!
 # https://docs.gitlab.com/runner/install/kubernetes.html
 
-- name: Paste gitlab_token
-  pause:
-    prompt: "Paste the secret token from http://your_machine_url:8080/root/flask-with-test/-/settings/ci_cd"
-    echo: yes
-  register: gitlab_token
-
 - name: Get pod name of Gitlab Runner
   shell: "k3s kubectl get pods | grep runner | awk '{print $1}'"
   register: runner_pod
 
-- name: Command to register to Gitlab Runner
-  set_fact:
-    register_command: "gitlab-runner register -n --url http://gitlab.default.svc.cluster.local:8080 --executor shell --description myDocker --registration-token {{ gitlab_token.user_input }}"
+- name: Control is runner registered or not
+  command: "k3s kubectl exec -t  {{ runner_pod.stdout }} -- gitlab-runner list"
+  register: is_registered
 
-- name: Register Gitlab Runner for project
-  command: "k3s kubectl exec -t  {{ runner_pod.stdout }} -- {{ register_command }}"
+- debug:
+    msg: "Pod already registered to Gitlab as runner"
+  when: "'URL\u001b[0;m=http://gitlab.default.svc.cluster.local:8080' in is_registered.stderr"
+
+- name: Register gitlab runner if it's not registered already
+  block:
+    - name: Paste gitlab_token
+      pause:
+        prompt: "Paste the secret token from http://your_machine_url:8080/root/flask-with-test/-/settings/ci_cd"
+        echo: yes
+      register: gitlab_token
+
+    - name: Command to register to Gitlab Runner
+      set_fact:
+        register_command: "gitlab-runner register -n --url http://gitlab.default.svc.cluster.local:8080 --executor shell --description myDocker --registration-token {{ gitlab_token.user_input }}"
+
+    - name: Register Gitlab Runner for project
+      command: "k3s kubectl exec -t  {{ runner_pod.stdout }} -- {{ register_command }}"
+  when: "'URL\u001b[0;m=http://gitlab.default.svc.cluster.local:8080' not in is_registered.stderr"
